@@ -1,5 +1,9 @@
 
+.idea/
+
 venv/
 
 __pycache__/
 *.pyc
+
+postgres.sh
