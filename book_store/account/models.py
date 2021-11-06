@@ -6,13 +6,16 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, date_of_birth, password=None):
+    def create_user(self, name, email, date_of_birth, password=None):
+        if not name:
+            raise ValueError("Users must have a name")
         if not email:
             raise ValueError('Users must have an email address')
         if not date_of_birth:
             raise ValueError('Users must have a date of birth')
 
         user = self.model(
+            name=name,
             email=self.normalize_email(email),
             date_of_birth=date_of_birth,
         )
@@ -20,9 +23,10 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, date_of_birth, password=None):
+    def create_superuser(self, name, email, date_of_birth, password=None):
         user = self.create_user(
-            email,
+            name=name,
+            email=email,
             password=password,
             date_of_birth=date_of_birth,
         )
@@ -50,9 +54,12 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'name'
-    REQUIRED_FIELDS = ['email, date_of_birth']
+    REQUIRED_FIELDS = ['email', 'date_of_birth']
 
     def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
         return True
 
     @property
