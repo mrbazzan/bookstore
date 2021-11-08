@@ -1,8 +1,8 @@
 
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
-# Create your models here.
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
@@ -46,7 +46,7 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_kid = models.BooleanField(default=False)
     name = models.CharField(max_length=255, unique=True)
-    profile = models.FileField(max_length=255, null=True)
+    profile = models.FileField(max_length=255)
     AGE_RANGE = [('18+', 'Adult'), ('<18', 'Adolescent')]
     age = models.CharField(max_length=3, choices=AGE_RANGE)
     created_at = models.DateField(auto_now_add=True)
@@ -65,3 +65,9 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+@receiver(post_save, sender=User)
+def update_is_kid(sender, instance, **kwargs):
+    if instance.is_admin is False and instance.age == '<18':
+        sender.objects.filter(pk=instance.pk).update(is_kid=True)

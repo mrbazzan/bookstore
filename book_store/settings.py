@@ -134,19 +134,20 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.User'
-
-FILE_PATH_FIELD_DIRECTORY = os.path.join(BASE_DIR, 'media')
+LOGIN_REDIRECT_URL = '/api/books/'
 
 UPLOADED_FILES_USE_URL = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FormParser',
     ],
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     'rest_framework.renderers.BrowsableAPIRenderer',
-    # ]
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
 }
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
