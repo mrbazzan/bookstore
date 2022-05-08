@@ -8,7 +8,7 @@ urlpatterns = [
         'get': "list",
         'post': "create",
     })),
-    path('books/<int:pk>/', BookViewSet.as_view({
+    path('book/<int:pk>/', BookViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'patch': 'partial_update',
