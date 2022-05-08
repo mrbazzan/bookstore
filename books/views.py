@@ -33,7 +33,7 @@ class BookViewSet(viewsets.ViewSet):
             return Book.objects.filter(pg=user_age)
         return Book.objects.all()
 
-    @action(detail=False)
+    @action(detail=False)  # detail=False; return a list of object
     def list(self, request):
         books = self.get_queryset()
         serializer = BookSerializer(books, many=True)
@@ -45,6 +45,7 @@ class BookViewSet(viewsets.ViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # @action; creates a custom action for urls
     @action(detail=False, permission_classes=(KidCanOnlyViewUnder18Books, ))
     def retrieve(self, request, pk=None):
         book = self.get_object(pk=pk)
