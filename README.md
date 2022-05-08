@@ -4,25 +4,199 @@
 ### Created with Django/Django Rest Framework
 
 
-# PROBLEM STATEMENT
-
-Create a backend for a bookstore system in Django. There can be 3 types of users: Admin, Adult Customers, and Child Customers. Create a simple backend that can authenticate these users and display books based on user type. Use a bucket like DigitalOcean Spaces, Amazon s3, or Google Firestore to store the book images and profile images.
-
-Note: 
-Admin can view, add, delete all books.
-Use free buckets, do not buy a bucket subscription.
-Images need not match content. Book image can be a wallpaper, Profile image can be a cartoon, etc.
-
-Required:
-1.Ensure you have modelled your backend correctly
-2.Use any RDBMS you like
-3.Must have books with restricted access to children (18+)
-4.Provide a ‘read me’ regarding the overall design and steps to run the application.
-5. Reference the URL of the image in the relational database table
-
-Brownie Points:
-1.Keep the frontend minimal, emphasis should be on the backend modelling and database tables.
-2.Polymorphic media modelling for images of profiles and books. 
+This is the backend for a bookstore system in Django. 
+There are three(3) types of users: Admin, Adult Customers, and Child Customers. 
 
 
-(We highly recommend Django Rest Framework).
+This project aims to create a simple backend that can authenticate these users and display books based on user type. 
+
+NB: I used Amazon s3(AWS S3) to store the book images and profile images.
+
+- The "Admin" should be able to view, add, delete all books.
+- The "Adult Customer" can view all books.
+- The "Child Customer" can only view books tagged as less than 18.
+
+## ENDPOINTS
+#### USERS
+
+- 
+  - **Endpoint** ``POST`` `/users/`
+    - This is the endpoint to create a user.
+      - **required fields**: `name`, `age`, `profile`, `email`, `date_of_birth`, `password`, `confirm_password`
+      - **Body**: A `json` object.
+      - Example:
+        ```json
+          {
+              "email": "user@example.com",
+              "name": "string",
+              "age": "string",
+              "date_of_birth": "string",
+              "profile": "<upload a file>",
+              "password": "string",
+              "confirm_password": "string"
+          }
+        ```
+
+
+- 
+  - **Endpoint** ``GET`` `/users/`
+  - Get all users. Only the admin has access to this information.
+  - It takes no parameter.
+  - It requires `Basic Authorization` header with admin's `username` and `password`.
+
+
+
+  - 
+    - **Endpoint** ``GET`` `/user/{id}/`
+    - Get user with specific id. Only the specific user and admin has access to this information.
+    - **id**: string
+      - The ID of the element. It is required.
+      - example: 1
+    - It requires `Basic Authorization` header with admin/specific user's `username` and `password`.
+  
+
+-
+  - **Endpoint** ``DELETE`` `/user/{id}/`
+  - Delete user with specific id. Only the specific user and admin can access this endpoint.
+  - **id**: string
+    - The ID of the element. It is required.
+    - example: 1
+  - It requires `Basic Authorization` header with admin/specific user's `username` and `password`.
+
+
+#### BOOKS
+
+- 
+    - **Endpoint** ``POST`` `/api/books/`
+    - Create a book.
+      - **Body**: A `json` object.
+      - This is required.
+      - Example: 
+        ```json
+          {
+              "name": "string",
+              "book_image": "<upload a file>",
+              "pg": "18+ or <18"
+          }
+        ```
+    - It requires `Basic Authorization` header with admin's `username` and `password`.
+
+
+- 
+    - **Endpoint** ``GET`` `/api/books/`
+    - Get all books. Books are displayed based on user's age.
+      - If user's age is "18+" (`Admin` and `Adult`), they can view all books.
+      - If user's age is "<18" (`Child`), they can only view books with pg "<18".
+    - It takes no parameter.
+    - It requires `Basic Authorization` header with `username` and `password`.
+  
+
+- 
+    - **Endpoint** ``GET`` `/api/book/{id}/`
+    - Get a book with specific id.
+      - `Adult Customer` and `Admin` can view all specific book.
+      - `Child Customer` can only view specific book with pg "<18".
+    - **id**: string
+      - The ID of the element. It is required.
+      - example: 1
+    - It requires `Basic Authorization` header with `username` and `password`.
+  
+
+- 
+    - **Endpoint** ``PUT`` `/api/book/{id}/`
+    - Update all the fields in the book. Only admin can update all fields.
+      - **Body**: A `json` object.
+      - This is required.
+      - Example: 
+        ```json
+          {
+              "name": "string",
+              "book_image": "<upload a file>",
+              "pg": "18+ or <18"
+          }
+        ```
+    - It requires `Basic Authorization` header with admin's `username` and `password`.
+
+
+- 
+    - **Endpoint** ``PATCH`` `/api/book/{id}/`
+    - Update some fields for the book. Only Admin can update some fields.
+      - **Body**: A `json` object.
+      - This is required. Number of filed must be greater than one but less than three.
+      - Example: 
+        ```json
+          {
+              "name": "string",
+              "pg": "18+ or <18"
+          }
+        ```
+    - It requires `Basic Authorization` header with admin's `username` and `password`.
+    
+
+- 
+  - **Endpoint** ``DELETE`` `/api/products/<id>`
+  - Delete book with id. Only Admin can delete book
+  - **id**: string
+    - The ID of the element. It is required.
+    - example: 1
+  - It requires `Basic Authorization` header with admin's `username` and `password`.
+
+
+
+##### ENDPOINTS CAN BE TESTED WITH `POSTMAN`
+
+
+To get started:
+-
+
+- Clone the repository
+```shell
+    git clone git@github.com:mrbazzan/bookstore.git
+```
+
+- Setup and Activate virtual environment
+```shell
+    python3 -m venv venv/
+    source venv/bin/activate
+```
+
+- Install dependencies
+```shell
+    pip install -r requirements.txt
+```
+
+- The RDBMS is `PostgreSQL`. Create a PostgreSQL database called `bookstore`.
+- Set up postgres environmental variable.
+```shell
+export POSTGRES_USER=""
+export POSTGRES_PASSWORD=""
+```
+
+
+- [Set up Amazon S3](https://simpleisbetterthancomplex.com/tutorial/2017/08/01/how-to-setup-amazon-s3-in-a-django-project.html)
+- [Getting started with Amazon S3](https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/)
+- Set up the bucket's environmental variables
+```shell
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_STORAGE_BUCKET_NAME=""
+export AWS_S3_REGION_NAME=""
+```
+
+- Make Django migrations and apply them
+```shell
+    python3 manage.py makemigrations
+    python manage.py migrate
+```
+
+- Create Super User
+```shell
+    python manage.py createsuperuser
+```
+
+- Run server
+```shell
+    python manage.py runserver
+```
+
+Once the server starts, create different users and test the functionalities.
