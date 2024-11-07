@@ -166,8 +166,18 @@ To get started:
 ```
 
 - The RDBMS is `PostgreSQL`. Create a PostgreSQL database called `bookstore`.
-- Set up postgres environmental variable.
+##### ON MACOS
 ```shell
+brew install postgresql@NN  # where NN is vesion number e.g 14
+brew services start postgresql
+psql postgres
+CREATE DATABASE bookstore;
+exit
+```
+
+- Set up postgres environmental variable or ignore to use default user.
+```shell
+
 export POSTGRES_USER=""
 export POSTGRES_PASSWORD=""
 ```
