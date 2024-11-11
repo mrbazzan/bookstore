@@ -36,6 +36,19 @@ NB: I used Amazon s3(AWS S3) to store the book images and profile images.
               "confirm_password": "string"
           }
         ```
+      - Script: Ensure your are in the `dir` that contains image.
+        ```bash
+           curl \
+              -F "email=user@example.com" \
+              -F "date_of_birth=1990-12-11" \
+              -F "name=name" \
+              -F "password=password" \
+              -F "confirm_password=password" \
+              -F "profile=@aws_settings.png" \
+              -F "age=18+" \
+            -X POST 127.0.0.1:8000/users/
+        ```
+
 
 
 - 
@@ -43,6 +56,12 @@ NB: I used Amazon s3(AWS S3) to store the book images and profile images.
   - Get all users. Only the admin has access to this information.
   - It takes no parameter.
   - It requires `Basic Authorization` header with admin's `username` and `password`.
+  - Script:
+    ```bash
+       curl 127.0.0.1:8000/users/ -u "username:password"
+    ```
+
+
 
 
 
