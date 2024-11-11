@@ -29,7 +29,7 @@ NB: I used Amazon s3(AWS S3) to store the book images and profile images.
           {
               "email": "user@example.com",
               "name": "string",
-              "age": "string",
+              "age": "string",  # '18+' or '<18'
               "date_of_birth": "string",
               "profile": "<upload a file>",
               "password": "string",
