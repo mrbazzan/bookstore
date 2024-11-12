@@ -29,7 +29,16 @@ class UserView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # TODO: "serializer.validated['profile']" returns an instance of
+            # InMemoryUploadedFile which raises an I/0 error when passed to Response
+            # (i.e it is not JSON serializable )
+            # This why we remove it and add the file's name manually.
+            profile = serializer.validated_data.pop('profile')
+
+            data = serializer.validated_data
+            data['profile'] = profile.name
+            return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
